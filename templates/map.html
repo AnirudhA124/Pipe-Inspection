@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Realtime GPS Tracker</title>
+    <link rel="stylesheet" href="static/map.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </head>
+  <body>
+      <div class="bg"></div>
+     <div class="bg-others"> 
+    <div class="container">
+      <h1 >Pipe Inspection Bot</h1>
+        <center><hr style="height:2px; border:none; color:#ffffff; background-color:#ffffff; width:35%; margin: 0 auto 0 auto;"></center>
+        <p>By Robotics and Circuits</p>  
+        <center><div id="map-canvas"></div></center>
+    </div>
+          </div>
+
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+    <script>
+    window.lat = 13.347658381398222;
+    window.lng = 74.79177832603456;
+
+    var map;
+    var mark;
+    var lineCoords = [];
+      
+    var initialize = function() {
+      map  = new google.maps.Map(document.getElementById('map-canvas'), {center:{lat:lat,lng:lng},zoom:12});
+      mark = new google.maps.Marker({position:{lat:lat, lng:lng}, map:map});
+    };
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyC3HFnPh3-I0sQvrTPkHY0MlGrVi4TlxM4",
+  authDomain: "gps-tracker01.firebaseapp.com",
+  databaseURL: "https://gps-tracker01-default-rtdb.firebaseio.com",
+  projectId: "gps-tracker01",
+  storageBucket: "gps-tracker01.appspot.com",
+  messagingSenderId: "877588705727",
+  appId: "1:877588705727:web:e77ed1dd266b75c2c8710a",
+  measurementId: "G-JEWN6VW1QT"
+};
+
+
+    window.initialize = initialize;
+
+    firebase.initializeApp(firebaseConfig );
+
+    var ref = firebase.database().ref();
+
+    ref.on("value", function(snapshot) {
+        var gps = snapshot.val();
+      console.log(gps.LAT);
+      console.log(gps.LNG);
+      lat = gps.LAT;
+      lng = gps.LNG;
+
+      map.setCenter({lat:lat, lng:lng, alt:0});
+      mark.setPosition({lat:lat, lng:lng, alt:0});
+      
+      lineCoords.push(new google.maps.LatLng(lat, lng));
+
+      var lineCoordinatesPath = new google.maps.Polyline({
+        path: lineCoords,
+        geodesic: true,
+        strokeColor: '#2E10FF'
+      });
+      
+      lineCoordinatesPath.setMap(map);
+    }, function (error) {
+      console.log("Error: " + error.code);
+    });
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAr34k19XMXxpk9SW8LJFqwCqkhTUjExhE&callback=initialize"></script>
+  </body>
+</html>
+
